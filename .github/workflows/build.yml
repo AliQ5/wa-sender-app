@@ -6,13 +6,17 @@ on:
       - 'v*' # Trigger build when a tag matching v* is pushed (e.g. v1.0.0)
   workflow_dispatch: # Allow running manually from the Actions tab
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-13, windows-latest]
+        os: [macos-13]
 
     steps:
       - name: Check out Git repository
