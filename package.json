@@ -1,0 +1,89 @@
+{
+  "name": "wa-sender",
+  "version": "1.0.0",
+  "description": "Bulk WhatsApp Messaging Desktop App",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build": "vite build",
+    "dist": "vite build && electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "server": "node server/server.cjs"
+  },
+  "keywords": [
+    "whatsapp",
+    "automation",
+    "excel",
+    "bulk-sender"
+  ],
+  "author": "WA-Sender",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "electron-updater": "^6.8.3",
+    "express": "^4.18.2",
+    "lucide-react": "^1.16.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.7.4",
+    "whatsapp-web.js": "^1.26.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^10.1.0",
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3",
+    "png2icons": "^2.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.24.0",
+    "sharp": "^0.34.5",
+    "socket.io-client": "^4.7.4",
+    "vite": "^5.3.1",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.wasender.app",
+    "productName": "WA-SENDER",
+    "icon": "assets/icon.png",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "assets/**/*",
+      "server/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png",
+      "category": "Office"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "WA-SENDER"
+    }
+  }
+}
