@@ -12,7 +12,7 @@ jobs:
     
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-13, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload Mac Artifacts
         uses: actions/upload-artifact@v4
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-13'
         with:
           name: macos-build
           path: release/*.dmg
