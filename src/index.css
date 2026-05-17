@@ -405,6 +405,28 @@ h2 { font-size: 16px; margin-bottom: 12px; }
 .contact-phone { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
 .contact-msg { font-size: 13px; color: var(--text-primary); white-space: pre-wrap; word-break: break-word; }
 
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.sent {
+  background-color: var(--accent);
+}
+.status-dot.pending {
+  background-color: var(--border);
+}
+.status-dot.sending {
+  background-color: #F59E0B;
+  animation: pulse-orange 1.5s infinite;
+}
+@keyframes pulse-orange {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
 /* ── Progress Bar ─────────────────────────────────────────────────────────── */
 .progress-wrap { margin-top: 12px; }
 .progress-track {

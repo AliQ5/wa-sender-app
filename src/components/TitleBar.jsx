@@ -31,7 +31,7 @@ export default function TitleBar() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 12 }}>
         <MessageCircle size={16} color="var(--accent)" fill="var(--accent)" />
         <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>WA-SENDER</span>
-        <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>v1.0.0</span>
+        <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>v1.2.1</span>
       </div>
 
       {/* Right side controls */}

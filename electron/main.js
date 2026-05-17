@@ -5,6 +5,30 @@ const setupUpdater = require('./updater')
 
 let win
 
+let storePromise = import('electron-store').then(m => new m.default())
+
+ipcMain.handle('templates:getAll', async () => {
+  const store = await storePromise
+  return store.get('templates', [])
+})
+
+ipcMain.handle('templates:save', async (_, template) => {
+  const store = await storePromise
+  const current = store.get('templates', [])
+  current.unshift(template)
+  if (current.length > 50) current.length = 50
+  store.set('templates', current)
+  return current
+})
+
+ipcMain.handle('templates:delete', async (_, id) => {
+  const store = await storePromise
+  const current = store.get('templates', [])
+  const updated = current.filter(t => t.id !== id)
+  store.set('templates', updated)
+  return updated
+})
+
 function startServer() {
   process.env.PORT = '3001'
   try {

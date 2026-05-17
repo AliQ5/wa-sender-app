@@ -22,6 +22,13 @@ const clients = new Map() // sessionId -> waClient
 const statuses = new Map() // sessionId -> { status, message, qr, ready }
 let isSending = false
 let sendingAborted = false
+let isPaused = false
+
+const waitIfPaused = async () => {
+  while (isPaused) {
+    await new Promise(r => setTimeout(r, 200))
+  }
+}
 
 // Browser path fallback for packaged Electron apps
 function getBrowserPath() {
@@ -364,7 +371,7 @@ function formatDate(val) {
 
 // Send messages
 app.post('/api/send', async (req, res) => {
-  const { sessionId, messages, delay = 3 } = req.body
+  const { sessionId, messages, minDelay = 3, maxDelay = 5 } = req.body
   if (!sessionId) return res.status(400).json({ error: 'sessionId required' })
 
   const statusObj = statuses.get(sessionId)
@@ -380,32 +387,47 @@ app.post('/api/send', async (req, res) => {
 
   isSending = true
   sendingAborted = false
+  isPaused = false
   res.json({ message: 'Sending started', total: messages.length, sessionId })
 
   let sent = 0
   let failed = 0
+  let results = []
 
   for (const item of messages) {
     if (sendingAborted) {
-      io.emit('send-progress', { status: 'aborted', sent, failed, total: messages.length, sessionId })
+      io.emit('send-progress', { status: 'aborted', sent, failed, total: messages.length, sessionId, results })
       break
     }
+
+    await waitIfPaused()
+    
+    if (sendingAborted) {
+      io.emit('send-progress', { status: 'aborted', sent, failed, total: messages.length, sessionId, results })
+      break
+    }
+
+    const currentDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay
 
     try {
       const phone = item.phone.replace(/\D/g, '')
       const chatId = `${phone}@c.us`
       await waClient.sendMessage(chatId, item.message)
       sent++
+      results.push({ ...item, status: 'sent', error: null })
+      
       io.emit('send-progress', {
         status: 'sending',
         sent, failed,
         total: messages.length,
         current: item.phone,
         label: item.label,
-        sessionId
+        sessionId,
+        delay_used_seconds: currentDelay
       })
     } catch (err) {
       failed++
+      results.push({ ...item, status: 'failed', error: err.message })
       io.emit('send-progress', {
         status: 'sending',
         sent, failed,
@@ -413,23 +435,35 @@ app.post('/api/send', async (req, res) => {
         current: item.phone,
         error: err.message,
         label: item.label,
-        sessionId
+        sessionId,
+        delay_used_seconds: currentDelay
       })
     }
 
-    if (delay > 0) {
-      await new Promise(r => setTimeout(r, delay * 1000))
+    if (currentDelay > 0) {
+      await new Promise(r => setTimeout(r, currentDelay * 1000))
     }
   }
 
   isSending = false
-  io.emit('send-progress', { status: sendingAborted ? 'aborted' : 'done', sent, failed, total: messages.length, sessionId })
+  io.emit('send-progress', { status: sendingAborted ? 'aborted' : 'done', sent, failed, total: messages.length, sessionId, results })
 })
 
 app.post('/api/abort', (req, res) => {
   sendingAborted = true
+  isPaused = false
   isSending = false
   res.json({ message: 'Aborted' })
+})
+
+app.post('/api/pause', (req, res) => {
+  isPaused = true
+  res.json({ message: 'Paused' })
+})
+
+app.post('/api/resume', (req, res) => {
+  isPaused = false
+  res.json({ message: 'Resumed' })
 })
 
 // ─── Socket.IO ───────────────────────────────────────────────────────────────
