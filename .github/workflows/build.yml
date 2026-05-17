@@ -29,6 +29,7 @@ jobs:
       - name: Build Desktop Application
         env:
           GH_TOKEN: ${{ secrets.github_token }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
         run: npm run dist
 
       - name: Upload Artifacts
