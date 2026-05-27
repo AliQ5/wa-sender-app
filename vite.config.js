@@ -6,6 +6,9 @@ export default defineConfig({
   base: './',
   server: {
     port: 5173,
+    watch: {
+      ignored: ['**/.wwebjs_cache/**', '**/.wwebjs_auth/**', '**/dist/**', '**/release/**']
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
