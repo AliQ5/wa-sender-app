@@ -51,7 +51,7 @@
     "productName": "WA-SENDER",
     "icon": "assets/icon.png",
     "directories": {
-      "output": "release 1.2.1"
+      "output": "release"
     },
     "files": [
       "dist/**/*",
